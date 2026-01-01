@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'google_id',
+        'role',
     ];
 
     /**
@@ -44,5 +46,21 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // Relationships
+    public function challenges()
+    {
+        return $this->hasMany(Challenge::class, 'created_by');
+    }
+
+    public function challengeParticipants()
+    {
+        return $this->hasMany(ChallengeParticipant::class);
+    }
+
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class);
     }
 }

@@ -91,3 +91,12 @@ These limitations become more severe as the number of participants or challenges
 
 The system follows a web-based architecture with separate concerns for application logic, data persistence, and file storage.
 
+## 7. Technical Stack
+
+- **Backend**: PHP (Laravel)
+- **Database**: MySQL
+- **File Storage**: MinIO (S3-compatible)
+- **Frontend**: Blade (Laravel's templating engine)
+- **Authentication**: Google OAuth 2.0
+- **Deployment**: Docker, Nginx
+- **CMS**: Filament Admin Panel

@@ -1,10 +1,10 @@
 # Feature Specification  
-Login Admin (Email & Password)
+Login Page Admin (Email & Password)
 
 ---
 
 ## 1. Feature Name
-Login Admin
+Login Page Admin
 
 ---
 

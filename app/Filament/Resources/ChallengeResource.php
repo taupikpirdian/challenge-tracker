@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ChallengeResource\Pages;
+use App\Filament\Resources\ChallengeResource\RelationManagers;
 use App\Models\Challenge;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -146,7 +147,7 @@ class ChallengeResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\RulesRelationManager::class,
         ];
     }
 

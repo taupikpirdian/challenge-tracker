@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SubmissionResource\Pages;
-use App\Filament\Resources\SubmissionResource\RelationManagers;
 use App\Models\Submission;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -357,6 +356,9 @@ class SubmissionResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->modifyQueryUsing(function (Builder $query) {
+                return $query->with(['values', 'user', 'challenge']);
+            })
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
@@ -424,11 +426,137 @@ class SubmissionResource extends Resource
         return $query;
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Section::make('Submission Information')
+                    ->schema([
+                        Infolists\Components\TextEntry::make('user.name')
+                            ->label('Participant'),
+                        Infolists\Components\TextEntry::make('challenge.title')
+                            ->label('Challenge'),
+                        Infolists\Components\TextEntry::make('formatted_date')
+                            ->label('Submission Date')
+                            ->date('M d, Y'),
+                        Infolists\Components\TextEntry::make('submitted_at')
+                            ->label('Submitted At')
+                            ->dateTime('M d, Y H:i:s'),
+                        Infolists\Components\TextEntry::make('status')
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'pending' => 'warning',
+                                'approved' => 'success',
+                                'rejected' => 'danger',
+                                default => 'gray',
+                            }),
+                    ])
+                    ->columns(2),
+
+                Infolists\Components\Section::make('Submission Data')
+                    ->schema([
+                        Infolists\Components\Grid::make(1)
+                            ->schema(function ($record) {
+                                if (!$record || !$record->challenge) {
+                                    return [];
+                                }
+
+                                // Load challenge with rules
+                                $challenge = \App\Models\Challenge::with('rules')->find($record->challenge_id);
+                                if (!$challenge || !$challenge->rules || $challenge->rules->isEmpty()) {
+                                    return [
+                                        Infolists\Components\TextEntry::make('no_data')
+                                            ->label('No Data')
+                                            ->default('No form fields configured for this challenge.')
+                                    ];
+                                }
+
+                                $entries = [];
+
+                                foreach ($challenge->rules->sortBy('order_number') as $rule) {
+                                    // Find the submission value for this rule
+                                    $submissionValue = $record->values->where('rule_id', $rule->id)->first();
+
+                                    $value = null;
+                                    if ($submissionValue) {
+                                        // Get value based on field type
+                                        switch ($rule->field_type) {
+                                            case 'text':
+                                            case 'textarea':
+                                            case 'radio':
+                                            case 'select':
+                                            case 'date':
+                                            case 'time':
+                                            case 'datetime':
+                                            case 'file':
+                                            case 'image':
+                                                $value = $submissionValue->value_text;
+                                                break;
+                                            case 'number':
+                                                $value = $submissionValue->value_number;
+                                                break;
+                                            case 'checkbox':
+                                            case 'toggle':
+                                                $value = $submissionValue->value_boolean;
+                                                break;
+                                        }
+                                    }
+
+                                    // Create entry based on field type
+                                    switch ($rule->field_type) {
+                                        case 'file':
+                                        case 'image':
+                                            $entry = Infolists\Components\ImageEntry::make('value')
+                                                ->label($rule->label)
+                                                ->default($value)
+                                                ->visible(fn () => !empty($value));
+                                            break;
+
+                                        case 'checkbox':
+                                        case 'toggle':
+                                            $entry = Infolists\Components\IconEntry::make('value')
+                                                ->label($rule->label)
+                                                ->boolean()
+                                                ->default($value);
+                                            break;
+
+                                        case 'number':
+                                            $entry = Infolists\Components\TextEntry::make('value')
+                                                ->label($rule->label)
+                                                ->default(fn () => $value !== null ? number_format($value, 2) : '-');
+                                            break;
+
+                                        case 'textarea':
+                                            $entry = Infolists\Components\TextEntry::make('value')
+                                                ->label($rule->label)
+                                                ->default(fn () => $value ?: '-')
+                                                ->columnSpanFull();
+                                            break;
+
+                                        default:
+                                            $entry = Infolists\Components\TextEntry::make('value')
+                                                ->label($rule->label)
+                                                ->default(fn () => $value ?: '-');
+                                    }
+
+                                    if ($entry) {
+                                        $entries[] = $entry;
+                                    }
+                                }
+
+                                return $entries;
+                            })
+                    ])
+                    ->columns(1),
+            ]);
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListSubmissions::route('/'),
             'create' => Pages\CreateSubmission::route('/create'),
+            'view' => Pages\ViewSubmission::route('/{record}'),
             'edit' => Pages\EditSubmission::route('/{record}/edit'),
         ];
     }

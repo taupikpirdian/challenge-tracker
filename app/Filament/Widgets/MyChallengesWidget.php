@@ -20,12 +20,18 @@ class MyChallengesWidget extends Widget
     {
         $user = Auth::user();
 
-        // Get challenges that the user is participating in
-        $myChallenges = Challenge::whereHas('participants', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
-        ->with('participants')
-        ->get();
+        // Get challenges that the user is participating in OR created by the user, ONLY active status
+        $myChallenges = Challenge::where('status', 'active')
+            ->where(function ($query) use ($user) {
+                // Challenges the user is participating in
+                $query->whereHas('participants', function ($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                });
+                // OR challenges created by the user
+                $query->orWhere('created_by', $user->id);
+            })
+            ->with('participants')
+            ->get();
 
         return [
             'challenges' => $myChallenges,

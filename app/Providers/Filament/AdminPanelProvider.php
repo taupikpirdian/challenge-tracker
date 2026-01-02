@@ -18,15 +18,26 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Widgets\StatsOverviewWidget;
+use App\Filament\Responses\LogoutResponse;
 
 class AdminPanelProvider extends PanelProvider
 {
+    public function register(): void
+    {
+        parent::register();
+
+        $this->app->singleton(
+            \Filament\Http\Responses\Auth\Contracts\LogoutResponse::class,
+            \App\Filament\Responses\LogoutResponse::class
+        );
+    }
+
     public function panel(Panel $panel): Panel
     {
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
+            ->path('dashboard')
             ->login()
             ->colors([
                 'primary' => Color::Amber,

@@ -39,6 +39,11 @@ class UserResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
+                        Forms\Components\TextInput::make('phone')
+                            ->label('No HP')
+                            ->tel()
+                            ->maxLength(20)
+                            ->helperText('Nomor handphone (opsional)'),
                         Forms\Components\DateTimePicker::make('email_verified_at')
                             ->native(false),
                     ])
@@ -53,16 +58,25 @@ class UserResource extends Resource
                             ->maxLength(255)
                             ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                             ->revealable(),
+                        Forms\Components\TextInput::make('password_confirmation')
+                            ->password()
+                            ->label('Confirm Password')
+                            ->required(fn (string $context): bool => $context === 'create')
+                            ->dehydrated(false)
+                            ->same('password')
+                            ->revealable(),
                     ])
                     ->columns(1),
 
-                Forms\Components\Section::make('Roles')
+                Forms\Components\Section::make('Role')
                     ->schema([
-                        Forms\Components\CheckboxList::make('roles')
+                        Forms\Components\Select::make('role')
+                            ->label('Role')
                             ->relationship('roles', 'name')
                             ->searchable()
-                            ->bulkSearchable()
-                            ->required(),
+                            ->preload()
+                            ->required()
+                            ->helperText('Pilih satu role untuk user ini'),
                     ])
                     ->columns(1),
 
@@ -88,6 +102,11 @@ class UserResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->copyable(),
+                Tables\Columns\TextColumn::make('phone')
+                    ->label('No HP')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('roles.name')
                     ->badge()
                     ->color('primary')

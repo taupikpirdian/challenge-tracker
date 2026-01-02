@@ -33,7 +33,6 @@ class RoleResource extends Resource
                         Forms\Components\CheckboxList::make('permissions')
                             ->relationship('permissions', 'name')
                             ->searchable()
-                            ->bulkSearchable()
                             ->columns(3)
                             ->helperText('Select permissions for this role'),
                     ])

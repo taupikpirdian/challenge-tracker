@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 
 class ChallengeResource extends Resource
 {
@@ -147,6 +148,60 @@ class ChallengeResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $user = Auth::user();
+
+        return parent::getEloquentQuery()
+            ->when(!$user?->hasRole(['super admin', 'admin']), function (Builder $query) use ($user) {
+                // Only show challenges created by the current user for non-admin roles
+                $query->where('created_by', $user->id);
+            });
+    }
+
+    public static function canViewAny(): bool
+    {
+        // All authenticated users can view challenges
+        return auth()->check();
+    }
+
+    public static function canCreate(): bool
+    {
+        // All authenticated users can create challenges
+        return auth()->check();
+    }
+
+    public static function canEdit($record): bool
+    {
+        $user = auth()->user();
+
+        // Admin and super admin can edit any challenge
+        if ($user?->hasRole(['super admin', 'admin'])) {
+            return true;
+        }
+
+        // Users can only edit their own challenges
+        return $record->created_by === $user?->id;
+    }
+
+    public static function canDelete($record): bool
+    {
+        $user = auth()->user();
+
+        // Admin and super admin can delete any challenge
+        if ($user?->hasRole(['super admin', 'admin'])) {
+            return true;
+        }
+
+        // Users can only delete their own challenges
+        return $record->created_by === $user?->id;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return auth()->check();
     }
 
     public static function getPages(): array

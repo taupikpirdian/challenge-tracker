@@ -65,6 +65,7 @@ class RoleAndPermissionSeeder extends Seeder
             'view challenge',
             'validate submission',
             'view all submissions',
+            'manage users',
         ]);
 
         // Super Admin role

@@ -20,6 +20,18 @@ class Submission extends Model
         'submitted_at' => 'datetime',
     ];
 
+    // Accessor to get human-readable date from day_number timestamp
+    public function getSubmissionDateAttribute(): string
+    {
+        return \Carbon\Carbon::createFromTimestamp($this->day_number)->format('Y-m-d');
+    }
+
+    // Accessor to get formatted date for display
+    public function getFormattedDateAttribute(): string
+    {
+        return \Carbon\Carbon::createFromTimestamp($this->day_number)->format('M d, Y');
+    }
+
     // Relationships
     public function user(): BelongsTo
     {

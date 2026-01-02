@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Challenge extends Model
 {
     protected $fillable = [
         'title',
+        'slug',
         'description',
         'cover_image',
         'start_date',
@@ -23,6 +25,23 @@ class Challenge extends Model
         'start_date' => 'date',
         'end_date' => 'date',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($challenge) {
+            if (empty($challenge->slug)) {
+                $challenge->slug = Str::slug($challenge->title);
+            }
+        });
+
+        static::updating(function ($challenge) {
+            if (empty($challenge->slug) || $challenge->isDirty('title')) {
+                $challenge->slug = Str::slug($challenge->title);
+            }
+        });
+    }
 
     // Relationships
     public function creator(): BelongsTo

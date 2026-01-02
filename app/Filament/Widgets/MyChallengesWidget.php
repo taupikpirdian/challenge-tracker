@@ -31,7 +31,14 @@ class MyChallengesWidget extends Widget
                 $query->orWhere('created_by', $user->id);
             })
             ->withCount('participants')
-            ->get();
+            ->get()
+            ->map(function ($challenge) {
+                // Ensure slug exists, if not generate it
+                if (!$challenge->slug) {
+                    $challenge->slug = \Illuminate\Support\Str::slug($challenge->title);
+                }
+                return $challenge;
+            });
 
         return [
             'challenges' => $myChallenges,

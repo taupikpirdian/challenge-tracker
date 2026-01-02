@@ -8,11 +8,11 @@
         @if(count($challenges ?? []) > 3)
         <div class="flex gap-2">
             <button onclick="slideCards(-1)"
-                class="p-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition">
+                class="p-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition dark:text-white">
                 ‹
             </button>
             <button onclick="slideCards(1)"
-                class="p-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition">
+                class="p-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition dark:text-white">
                 ›
             </button>
         </div>
@@ -24,7 +24,11 @@
         <div id="cards-track" class="slider-track">
             @forelse($challenges ?? [] as $challenge)
                 <!-- CARD -->
-                <div class="slider-card rounded-lg overflow-hidden shadow-lg bg-white dark:bg-gray-700">
+                @php
+                    $slug = $challenge->slug ?? \Illuminate\Support\Str::slug($challenge->title);
+                @endphp
+                <div class="slider-card rounded-lg overflow-hidden shadow-lg bg-white dark:bg-gray-700 cursor-pointer hover:scale-105 transition-transform duration-200"
+                     onclick="window.location.href='{{ route('challenges.show', $slug) }}'">
                     @if($challenge->cover_image)
                         <img class="w-full h-48 object-cover" src="{{ asset('storage/' . $challenge->cover_image) }}" alt="{{ $challenge->title }}">
                     @else
@@ -32,7 +36,7 @@
                     @endif
 
                     <div class="px-6 py-4">
-                        <div class="font-bold text-xl mb-2 text-gray-900 dark:text-white">
+                        <div class="font-bold text-xl mb-2 text-gray-900 dark:text-white hover:text-amber-600 dark:hover:text-amber-500 transition">
                             {{ $challenge->title }}
                         </div>
                         @if($challenge->description)

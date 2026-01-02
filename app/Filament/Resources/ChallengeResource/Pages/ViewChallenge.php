@@ -4,9 +4,9 @@ namespace App\Filament\Resources\ChallengeResource\Pages;
 
 use App\Filament\Resources\ChallengeResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use Filament\Resources\Pages\ViewRecord;
 
-class EditChallenge extends EditRecord
+class ViewChallenge extends ViewRecord
 {
     protected static string $resource = ChallengeResource::class;
 
@@ -18,7 +18,7 @@ class EditChallenge extends EditRecord
                 ->icon('heroicon-o-users')
                 ->color('primary')
                 ->url(fn (): string => route('filament.admin.resources.challenges.participants', ['record' => $this->record])),
-            Actions\DeleteAction::make(),
+            Actions\EditAction::make(),
         ];
     }
 }

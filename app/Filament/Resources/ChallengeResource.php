@@ -133,7 +133,13 @@ class ChallengeResource extends Resource
                     ]),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('participants')
+                    ->label('Participants')
+                    ->icon('heroicon-o-users')
+                    ->color('primary')
+                    ->url(fn ($record) => route('filament.admin.resources.challenges.participants', ['record' => $record])),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -213,7 +219,10 @@ class ChallengeResource extends Resource
         return [
             'index' => Pages\ListChallenges::route('/'),
             'create' => Pages\CreateChallenge::route('/create'),
+            'view' => Pages\ViewChallenge::route('/{record}'),
             'edit' => Pages\EditChallenge::route('/{record}/edit'),
+            'participants' => Pages\ManageParticipants::route('/{record}/participants'),
+            'participant-submissions' => Pages\ViewParticipantSubmissions::route('/{record}/participants/{participant}'),
         ];
     }
 }

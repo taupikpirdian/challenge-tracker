@@ -13,6 +13,8 @@ class DashboardGreetingWidget extends Widget
 
     protected int | string | array $columnSpan = 'full';
 
+    protected static ?int $sort = 1;
+
     public static function canView(): bool
     {
         return Auth::check();

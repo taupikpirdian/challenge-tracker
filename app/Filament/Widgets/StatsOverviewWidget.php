@@ -8,9 +8,22 @@ use App\Models\Challenge;
 use App\Models\User;
 use App\Models\Submission;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class StatsOverviewWidget extends BaseWidget
 {
+    protected static ?int $sort = 3;
+
+    protected int | string | array $columnSpan = 'full';
+
+    public static function canView(): bool
+    {
+        $user = Auth::user();
+
+        // Only show for admin and super admin
+        return $user && $user->hasRole(['super admin', 'admin']);
+    }
+
     protected function getStats(): array
     {
         return [

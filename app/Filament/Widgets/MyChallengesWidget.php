@@ -30,7 +30,7 @@ class MyChallengesWidget extends Widget
                 // OR challenges created by the user
                 $query->orWhere('created_by', $user->id);
             })
-            ->with('participants')
+            ->withCount('participants')
             ->get();
 
         return [

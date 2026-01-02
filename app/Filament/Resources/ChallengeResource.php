@@ -102,13 +102,15 @@ class ChallengeResource extends Resource
                     ->numeric()
                     ->sortable()
                     ->suffix(' days'),
-                Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
-                        'secondary' => 'draft',
-                        'success' => 'active',
-                        'primary' => 'completed',
-                        'danger' => 'cancelled',
-                    ]),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'draft' => 'gray',
+                        'active' => 'success',
+                        'completed' => 'primary',
+                        'cancelled' => 'danger',
+                        default => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('creator.name')
                     ->sortable()
                     ->toggleable(),
@@ -148,6 +150,7 @@ class ChallengeResource extends Resource
     {
         return [
             RelationManagers\RulesRelationManager::class,
+            RelationManagers\SubmissionsRelationManager::class,
         ];
     }
 

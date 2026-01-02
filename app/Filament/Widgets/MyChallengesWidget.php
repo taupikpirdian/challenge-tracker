@@ -31,6 +31,9 @@ class MyChallengesWidget extends Widget
                 $query->orWhere('created_by', $user->id);
             })
             ->withCount('participants')
+            ->withCount(['submissions as pending_submissions_count' => function ($query) {
+                $query->where('status', 'pending');
+            }])
             ->get()
             ->map(function ($challenge) {
                 // Ensure slug exists, if not generate it
@@ -40,8 +43,20 @@ class MyChallengesWidget extends Widget
                 return $challenge;
             });
 
+        // Count total pending submissions for challenges created by the user
+        $totalPendingSubmissions = Challenge::where('created_by', $user->id)
+            ->whereHas('submissions', function ($query) {
+                $query->where('status', 'pending');
+            })
+            ->withCount(['submissions as pending_count' => function ($query) {
+                $query->where('status', 'pending');
+            }])
+            ->get()
+            ->sum('pending_count');
+
         return [
             'challenges' => $myChallenges,
+            'totalPendingSubmissions' => $totalPendingSubmissions,
         ];
     }
 

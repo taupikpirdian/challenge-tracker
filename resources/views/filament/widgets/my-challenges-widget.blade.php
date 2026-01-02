@@ -1,9 +1,20 @@
 <div class="my-challenges-widget w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mt-6">
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-            🎯 Langkah Harianku
-        </h2>
+        <div class="flex items-center gap-4">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                🎯 Langkah Harianku
+            </h2>
+            @if(isset($totalPendingSubmissions) && $totalPendingSubmissions > 0)
+            <a href="{{ route('filament.admin.resources.submissions.index', ['filter' => ['status' => 'pending']]) }}"
+               class="inline-flex items-center px-3 py-1 bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300 rounded-full text-sm font-semibold hover:bg-red-200 dark:hover:bg-red-800 transition">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                {{ $totalPendingSubmissions }} Pending
+            </a>
+            @endif
+        </div>
 
         @if(count($challenges ?? []) > 3)
         <div class="flex gap-2">
@@ -36,8 +47,15 @@
                     @endif
 
                     <div class="px-6 py-4">
-                        <div class="font-bold text-xl mb-2 text-gray-900 dark:text-white hover:text-amber-600 dark:hover:text-amber-500 transition">
-                            {{ $challenge->title }}
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="font-bold text-xl text-gray-900 dark:text-white hover:text-amber-600 dark:hover:text-amber-500 transition">
+                                {{ $challenge->title }}
+                            </div>
+                            @if(isset($challenge->pending_submissions_count) && $challenge->pending_submissions_count > 0)
+                            <span class="inline-flex items-center px-2 py-1 bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300 rounded-full text-xs font-semibold">
+                                {{ $challenge->pending_submissions_count }} pending
+                            </span>
+                            @endif
                         </div>
                         @if($challenge->description)
                         <p class="text-white-600 dark:text-gray-300 text-sm line-clamp-2">

@@ -3,15 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ChallengeResource\Pages;
-use App\Filament\Resources\ChallengeResource\RelationManagers;
 use App\Models\Challenge;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 
 class ChallengeResource extends Resource
@@ -32,11 +29,24 @@ class ChallengeResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->columnSpanFull(),
+                        Forms\Components\FileUpload::make('cover_image')
+                            ->label('Cover Image')
+                            ->image()
+                            ->directory('challenge-covers')
+                            ->maxSize(5120) // 5MB
+                            ->acceptedFileTypes(['image/png', 'image/jpeg', 'image/jpg', 'image/webp'])
+                            ->columnSpanFull()
+                            ->helperText('Upload a cover image for the challenge (PNG, JPG, WEBP - Max 5MB)'),
                         Forms\Components\RichEditor::make('description')
                             ->columnSpanFull()
                             ->fileAttachmentsDisk('public')
                             ->fileAttachmentsDirectory('uploads')
                             ->required(),
+                    ])
+                    ->columns(1),
+
+                Forms\Components\Section::make('Settings')
+                    ->schema([
                         Forms\Components\DatePicker::make('start_date')
                             ->required()
                             ->native(false),
@@ -60,15 +70,10 @@ class ChallengeResource extends Resource
                             ->required()
                             ->default('draft')
                             ->searchable(),
-                    ])
-                    ->columns(2),
-
-                Forms\Components\Section::make('Settings')
-                    ->schema([
                         Forms\Components\Hidden::make('created_by')
                             ->default(Auth::id()),
                     ])
-                    ->columns(1),
+                    ->columns(2),
             ]);
     }
 
@@ -76,6 +81,11 @@ class ChallengeResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('cover_image')
+                    ->label('Cover')
+                    ->circular(false)
+                    ->defaultImageUrl(url('/images/placeholder-challenge.png'))
+                    ->size(80),
                 Tables\Columns\TextColumn::make('title')
                     ->searchable()
                     ->sortable()

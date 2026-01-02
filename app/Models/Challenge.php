@@ -11,6 +11,7 @@ class Challenge extends Model
     protected $fillable = [
         'title',
         'description',
+        'cover_image',
         'start_date',
         'end_date',
         'duration_days',

@@ -434,27 +434,56 @@
                                                         <dd class="text-sm font-medium text-gray-900 dark:text-white">
                                                             @if($value->rule->field_type === 'image')
                                                                 @if($value->value_text)
-                                                                    <img src="{{ asset('storage/' . $value->value_text) }}"
-                                                                         alt="{{ $value->rule->label }}"
-                                                                         class="max-w-xs max-h-48 rounded-lg object-cover border border-gray-200 dark:border-gray-600"
-                                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                                                                    <div class="relative group">
+                                                                        <img src="{{ asset('storage/' . $value->value_text) }}"
+                                                                             alt="{{ $value->rule->label }}"
+                                                                             class="max-w-full md:max-w-md max-h-64 w-auto rounded-lg object-cover border border-gray-200 dark:border-gray-600 cursor-pointer transition-transform duration-300 group-hover:scale-105 shadow-lg"
+                                                                             onclick="openImageModal('{{ asset('storage/' . $value->value_text) }}')"
+                                                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                                                                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-lg flex items-center justify-center pointer-events-none">
+                                                                            <svg class="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                                                            </svg>
+                                                                        </div>
+                                                                    </div>
                                                                     <span class="text-red-500 hidden" style="display:none">Image not found</span>
                                                                 @else
-                                                                    <span class="text-gray-400 italic">No image uploaded (value_text is empty)</span>
+                                                                    <span class="text-gray-400 italic">No image uploaded</span>
                                                                 @endif
 
                                                             @elseif($value->rule->field_type === 'file')
                                                                 @if($value->value_text)
-                                                                    <a href="{{ asset('storage/' . $value->value_text) }}"
-                                                                       target="_blank"
-                                                                       class="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300 flex items-center">
-                                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                                                        </svg>
-                                                                        Download File
-                                                                    </a>
+                                                                    @php
+                                                                        $filePath = $value->value_text;
+                                                                        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+                                                                        $isImage = in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp']);
+                                                                    @endphp
+                                                                    @if($isImage)
+                                                                        <div class="relative group">
+                                                                            <img src="{{ asset('storage/' . $value->value_text) }}"
+                                                                                 alt="{{ $value->rule->label }}"
+                                                                                 class="max-w-full md:max-w-md max-h-64 w-auto rounded-lg object-cover border border-gray-200 dark:border-gray-600 cursor-pointer transition-transform duration-300 group-hover:scale-105 shadow-lg"
+                                                                                 onclick="openImageModal('{{ asset('storage/' . $value->value_text) }}')"
+                                                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                                                                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-lg flex items-center justify-center pointer-events-none">
+                                                                                <svg class="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                                                                </svg>
+                                                                            </div>
+                                                                        </div>
+                                                                        <span class="text-red-500 hidden" style="display:none">Image not found</span>
+                                                                    @else
+                                                                        <a href="{{ asset('storage/' . $value->value_text) }}"
+                                                                           target="_blank"
+                                                                           class="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300 flex items-center">
+                                                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                                            </svg>
+                                                                            Download File
+                                                                        </a>
+                                                                    @endif
                                                                 @else
-                                                                    <span class="text-gray-400 italic">No file uploaded (value_text is empty)</span>
+                                                                    <span class="text-gray-400 italic">No file uploaded</span>
                                                                 @endif
 
                                                             @elseif($value->rule->field_type === 'textarea' || $value->rule->field_type === 'text')
@@ -616,6 +645,19 @@
     </div>
 </div>
 
+<!-- Image Modal -->
+<div id="imageModal" class="fixed inset-0 z-50 hidden" onclick="closeImageModal()">
+    <div class="absolute inset-0 bg-black bg-opacity-90 backdrop-blur-sm"></div>
+    <div class="relative h-full flex items-center justify-center p-4">
+        <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white hover:text-gray-300 z-10 p-2 bg-black bg-opacity-50 rounded-full">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        <img id="modalImage" src="" alt="Full size preview" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl">
+    </div>
+</div>
+
 <script>
 function switchTab(tabName) {
     // Hide all tab contents
@@ -644,5 +686,27 @@ function switchTab(tabName) {
         selectedButton.classList.add('border-amber-500', 'text-amber-600', 'dark:text-amber-400');
     }
 }
+
+function openImageModal(imageSrc) {
+    event.stopPropagation();
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    modalImage.src = imageSrc;
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeImageModal();
+    }
+});
 </script>
 @endsection

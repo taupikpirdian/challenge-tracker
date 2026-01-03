@@ -115,11 +115,43 @@ class ChallengeController extends Controller
             ->filter()
             ->values();
 
+        // Calculate challenge statistics
+        $allParticipants = ChallengeParticipant::where('challenge_id', $challenge->id)->get();
+        $activeStreakCount = 0;
+        $leftBehindCount = 0;
+
+        foreach ($allParticipants as $participant) {
+            $streak = $this->calculateStreak($participant->user_id, $challenge->id);
+            if ($streak > 0) {
+                $activeStreakCount++;
+            } else {
+                // Check if they have any submissions
+                $hasSubmissions = Submission::where('user_id', $participant->user_id)
+                    ->where('challenge_id', $challenge->id)
+                    ->exists();
+                if ($hasSubmissions) {
+                    $leftBehindCount++;
+                }
+            }
+        }
+
+        // New submissions in last 24 hours
+        $newSubmissionsCount = Submission::where('challenge_id', $challenge->id)
+            ->where('created_at', '>=', now()->subHours(24))
+            ->count();
+
+        // Total submissions
+        $totalSubmissions = Submission::where('challenge_id', $challenge->id)->count();
+
         return view('challenges.show', compact(
             'challenge',
             'isParticipant',
             'userSubmissions',
-            'topParticipants'
+            'topParticipants',
+            'activeStreakCount',
+            'leftBehindCount',
+            'newSubmissionsCount',
+            'totalSubmissions'
         ));
     }
 

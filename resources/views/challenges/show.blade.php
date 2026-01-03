@@ -199,6 +199,124 @@
         </div>
     </div>
 
+    <!-- Challenge Stats Section -->
+    @if($challenge->status === 'active' || $challenge->status === 'completed')
+        <div class="bg-gradient-to-r from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-800 rounded-xl shadow-lg p-6 md:p-8 mb-8 border border-amber-200 dark:border-gray-700">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                </svg>
+                Challenge Statistics
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Active Streaks -->
+                <div class="bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30 rounded-xl p-5 border border-orange-300 dark:border-orange-700 transform hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-lg">
+                            <span class="text-2xl">🔥</span>
+                        </div>
+                        <span class="text-xs font-semibold text-orange-700 dark:text-orange-300 bg-orange-200 dark:bg-orange-800 px-2 py-1 rounded-full">
+                            Active
+                        </span>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                        {{ $activeStreakCount ?? 0 }}
+                    </p>
+                    <p class="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                        peoples keep the streak
+                    </p>
+                </div>
+
+                <!-- New Submissions -->
+                <div class="bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-xl p-5 border border-green-300 dark:border-green-700 transform hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
+                            <span class="text-2xl">🆕</span>
+                        </div>
+                        <span class="text-xs font-semibold text-green-700 dark:text-green-300 bg-green-200 dark:bg-green-800 px-2 py-1 rounded-full">
+                            New
+                        </span>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                        {{ $newSubmissionsCount ?? 0 }}
+                    </p>
+                    <p class="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                        new submission
+                    </p>
+                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                        Last 24 hours
+                    </p>
+                </div>
+
+                <!-- Left Behind -->
+                <div class="bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-xl p-5 border border-blue-300 dark:border-blue-700 transform hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
+                            <span class="text-2xl">😔</span>
+                        </div>
+                        <span class="text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-200 dark:bg-blue-800 px-2 py-1 rounded-full">
+                            Alert
+                        </span>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                        {{ $leftBehindCount ?? 0 }}
+                    </p>
+                    <p class="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                        people left behind
+                    </p>
+                </div>
+
+                <!-- Total Submissions -->
+                <div class="bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-xl p-5 border border-purple-300 dark:border-purple-700 transform hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-lg">
+                            <span class="text-2xl">📊</span>
+                        </div>
+                        <span class="text-xs font-semibold text-purple-700 dark:text-purple-300 bg-purple-200 dark:bg-purple-800 px-2 py-1 rounded-full">
+                            Total
+                        </span>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                        {{ $totalSubmissions ?? 0 }}
+                    </p>
+                    <p class="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                        total submissions
+                    </p>
+                </div>
+            </div>
+
+            <!-- Progress Bar for Challenge Completion -->
+            @if($challenge->duration_days > 0 && $challenge->start_date && $challenge->end_date)
+                @php
+                    $totalChallengeDays = $challenge->start_date->diffInDays($challenge->end_date) + 1;
+                    $daysElapsed = $challenge->start_date->diffInDays(now()) + 1;
+                    $challengeProgress = min(100, max(0, round(($daysElapsed / $totalChallengeDays) * 100)));
+                @endphp
+                <div class="mt-6 pt-6 border-t border-gray-300 dark:border-gray-600">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            Challenge Time Progress
+                        </span>
+                        <span class="text-sm font-bold text-amber-600 dark:text-amber-400">
+                            {{ $challengeProgress }}%
+                        </span>
+                    </div>
+                    <div class="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
+                        <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 h-4 rounded-full transition-all duration-700 ease-out relative"
+                             style="width: {{ $challengeProgress }}%">
+                            <div class="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-2 text-center">
+                        Day {{ min($daysElapsed, $totalChallengeDays) }} of {{ $totalChallengeDays }}
+                    </p>
+                </div>
+            @endif
+        </div>
+    @endif
+
     <!-- Progress Tabs Section -->
     @if($isParticipant && $challenge->status === 'active')
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-8">

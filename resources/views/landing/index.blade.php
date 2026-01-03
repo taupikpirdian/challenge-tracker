@@ -214,7 +214,7 @@
                                 Pelajari Lebih
                             </a>
                         </div>
-                        <div class="mt-5 d-flex gap-4">
+                        {{-- <div class="mt-5 d-flex gap-4">
                             <div class="stat-item">
                                 <h3 class="fw-bold mb-0">500+</h3>
                                 <small class="text-light-50">Active Participants</small>
@@ -227,7 +227,7 @@
                                 <h3 class="fw-bold mb-0">99.9%</h3>
                                 <small class="text-light-50">Uptime</small>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -296,36 +296,60 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="feature-card h-100">
                         <div class="feature-icon bg-gradient bg-gradient-1">
-                            <i class="fas fa-bullseye"></i>
+                            🏆
                         </div>
                         <h4 class="fw-bold mb-3">Challenge Builder</h4>
-                        <p class="text-muted mb-0">
-                            Buat challenge dengan custom rules dan form fields yang fleksibel. Sesuaikan dengan kebutuhan komunitas Anda tanpa coding.
-                        </p>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                ✅ <span class="text-muted">Custom rules & form fields</span>
+                            </li>
+                            <li class="mb-2">
+                                ✅ <span class="text-muted">Tanpa coding required</span>
+                            </li>
+                            <li>
+                                ✅ <span class="text-muted">Sesuaikan kebutuhan komunitas</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
                 <div class="col-lg-4 col-md-6">
                     <div class="feature-card h-100">
                         <div class="feature-icon bg-gradient bg-gradient-2">
-                            <i class="fas fa-chart-line"></i>
+                            📊
                         </div>
                         <h4 class="fw-bold mb-3">Real-time Tracking</h4>
-                        <p class="text-muted mb-0">
-                            Monitor progress participant secara real-time. Lihat leaderboard, streak, dan achievements dengan dashboard yang intuitive.
-                        </p>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                ✅ <span class="text-muted">Monitor progress participant</span>
+                            </li>
+                            <li class="mb-2">
+                                ✅ <span class="text-muted">Leaderboard & streak tracking</span>
+                            </li>
+                            <li>
+                                ✅ <span class="text-muted">Dashboard yang intuitive</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
                 <div class="col-lg-4 col-md-6">
                     <div class="feature-card h-100">
                         <div class="feature-icon bg-gradient bg-gradient-3">
-                            <i class="fas fa-robot"></i>
+                            ⚙️
                         </div>
                         <h4 class="fw-bold mb-3">Automated Workflow</h4>
-                        <p class="text-muted mb-0">
-                            Reduce admin time hingga 80% dengan automasi submission validation, progress tracking, dan report generation.
-                        </p>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                ✅ <span class="text-muted">Reduce admin time 80%</span>
+                            </li>
+                            <li class="mb-2">
+                                ✅ <span class="text-muted">Automated submission validation</span>
+                            </li>
+                            <li>
+                                ✅ <span class="text-muted">Auto report generation</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -772,15 +796,6 @@
                         <li class="mb-2"><a href="{{ route('register') }}" class="text-white-50 text-decoration-none">Register</a></li>
                         <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Help Center</a></li>
                         <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Contact</a></li>
-                    </ul>
-                </div>
-
-                <div class="col-lg-2 col-md-4">
-                    <h6 class="fw-bold mb-3">Legal</h6>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Privacy Policy</a></li>
-                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Terms of Service</a></li>
-                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Cookie Policy</a></li>
                     </ul>
                 </div>
             </div>

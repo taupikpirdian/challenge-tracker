@@ -11,6 +11,57 @@ use Illuminate\View\View;
 class ChallengeController extends Controller
 {
     /**
+     * Calculate streak for a user's submissions
+     */
+    private function calculateStreak($userId, $challengeId): int
+    {
+        // Get all submissions for this user in this challenge, ordered by date
+        $submissions = Submission::where('user_id', $userId)
+            ->where('challenge_id', $challengeId)
+            ->orderBy('day_number', 'desc') // Get most recent first
+            ->pluck('day_number')
+            ->map(function($timestamp) {
+                return \Carbon\Carbon::createFromTimestamp($timestamp)->startOfDay();
+            })
+            ->values();
+
+        if ($submissions->isEmpty()) {
+            return 0;
+        }
+
+        $streak = 0;
+        $today = now()->startOfDay();
+
+        // Check if the most recent submission is from today or yesterday
+        $mostRecent = $submissions->first();
+        $daysDiff = $today->diffInDays($mostRecent);
+
+        // If most recent submission is older than yesterday, streak is broken
+        if ($daysDiff > 1) {
+            return 0;
+        }
+
+        $streak = 1;
+        $currentDate = $mostRecent;
+
+        // Count consecutive days going backwards
+        foreach ($submissions->skip(1) as $prevDate) {
+            $daysDiff = $currentDate->diffInDays($prevDate);
+
+            // If consecutive day (difference is exactly 1 day)
+            if ($daysDiff === 1) {
+                $streak++;
+                $currentDate = $prevDate;
+            } else {
+                // Break the streak
+                break;
+            }
+        }
+
+        return $streak;
+    }
+
+    /**
      * Display the specified challenge.
      */
     public function show(string $slug): View
@@ -56,6 +107,8 @@ class ChallengeController extends Controller
                     ->first();
                 if ($participant) {
                     $participant->submissions_count = $item->submissions_count;
+                    // Calculate streak for this participant
+                    $participant->streak = $this->calculateStreak($item->user_id, $challenge->id);
                 }
                 return $participant;
             })

@@ -4,12 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ChallengeController;
 use App\Http\Controllers\SubmissionController;
+use App\Http\Controllers\LandingController;
 
-// Public routes
-Route::get('/', function () {
-    // Redirect to login page
-    return redirect('/login');
-});
+// Landing page
+Route::get('/', [LandingController::class, 'index'])->name('landing');
 
 // Authentication routes for participants
 Route::middleware(['guest'])->group(function () {

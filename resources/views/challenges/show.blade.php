@@ -527,9 +527,17 @@
                                         <h4 class="font-semibold text-gray-900 dark:text-white">
                                             {{ $participant->user->name ?? 'Anonymous' }}
                                         </h4>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400">
-                                            {{ $participant->submissions_count }} submissions
-                                        </p>
+                                        <div class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+                                            <span>{{ $participant->submissions_count }} submissions</span>
+                                            @if(isset($participant->streak) && $participant->streak > 0)
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                                                    {{ $participant->streak >= 7 ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300' :
+                                                       ($participant->streak >= 3 ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' :
+                                                       'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300') }}">
+                                                    🔥 {{ $participant->streak }} day streak
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="text-right">

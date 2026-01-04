@@ -35,6 +35,9 @@ COPY . .
 RUN rm -f bootstrap/cache/packages.php \
     && php artisan package:discover --ansi || true
 
+# Storage Link
+RUN php artisan storage:link
+
 # Permissions
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 775 storage bootstrap/cache

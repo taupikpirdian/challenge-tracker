@@ -56,9 +56,6 @@ RUN php artisan config:clear \
 # Publish Livewire assets
 RUN php artisan vendor:publish --tag=livewire:assets --force
 
-# Run migrations
-RUN php artisan migrate --seed
-
 # Ensure writable permissions for storage and cache
 RUN mkdir -p storage bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache \

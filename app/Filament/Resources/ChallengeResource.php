@@ -83,50 +83,57 @@ class ChallengeResource extends Resource
                         Forms\Components\Repeater::make('rules')
                             ->relationship()
                             ->schema([
-                                Forms\Components\TextInput::make('label')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->columnSpanFull()
-                                    ->helperText('The field label that users will see (e.g., "Weight", "Distance", "Notes")'),
-                                Forms\Components\Select::make('field_type')
-                                    ->required()
-                                    ->options([
-                                        'text' => 'Text Input',
-                                        'number' => 'Number Input',
-                                        'textarea' => 'Text Area',
-                                        'date' => 'Date Picker',
-                                        'time' => 'Time Picker',
-                                        'datetime' => 'Date & Time Picker',
-                                        'file' => 'File Upload',
-                                        'image' => 'Image Upload',
-                                        'select' => 'Dropdown Select',
-                                        'radio' => 'Radio Button',
-                                        'checkbox' => 'Checkbox',
-                                        'toggle' => 'Toggle Switch',
+                                Forms\Components\Section::make()
+                                    ->schema([
+                                        Forms\Components\TextInput::make('label')
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->columnSpanFull()
+                                            ->helperText('The field label that users will see (e.g., "Weight", "Distance", "Notes")'),
+                                        Forms\Components\Grid::make(2)
+                                            ->schema([
+                                                Forms\Components\Select::make('field_type')
+                                                    ->required()
+                                                    ->options([
+                                                        'text' => 'Text Input',
+                                                        'number' => 'Number Input',
+                                                        'textarea' => 'Text Area',
+                                                        'date' => 'Date Picker',
+                                                        'time' => 'Time Picker',
+                                                        'datetime' => 'Date & Time Picker',
+                                                        'file' => 'File Upload',
+                                                        'image' => 'Image Upload',
+                                                        'select' => 'Dropdown Select',
+                                                        'radio' => 'Radio Button',
+                                                        'checkbox' => 'Checkbox',
+                                                        'toggle' => 'Toggle Switch',
+                                                    ])
+                                                    ->default('text')
+                                                    ->searchable()
+                                                    ->helperText('The type of input field for this form element'),
+                                                Forms\Components\TextInput::make('order_number')
+                                                    ->required()
+                                                    ->numeric()
+                                                    ->default(1)
+                                                    ->minValue(1)
+                                                    ->helperText('The order in which this field appears in the form'),
+                                            ]),
+                                        Forms\Components\Toggle::make('is_required')
+                                            ->default(false)
+                                            ->inline(false)
+                                            ->columnSpanFull()
+                                            ->helperText('Whether this field must be filled by the user'),
                                     ])
-                                    ->default('text')
-                                    ->searchable()
-                                    ->columnSpanFull()
-                                    ->helperText('The type of input field for this form element'),
-                                Forms\Components\Toggle::make('is_required')
-                                    ->default(false)
-                                    ->inline(false)
-                                    ->columnSpanFull()
-                                    ->helperText('Whether this field must be filled by the user'),
-                                Forms\Components\TextInput::make('order_number')
-                                    ->required()
-                                    ->numeric()
-                                    ->default(1)
-                                    ->minValue(1)
-                                    ->columnSpanFull()
-                                    ->helperText('The order in which this field appears in the form'),
+                                    ->columns(1),
                             ])
                             ->columns(1)
                             ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
                             ->reorderableWithButtons()
                             ->collapsible()
+                            ->collapsed()
                             ->defaultItems(0)
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->addActionLabel('Add Rule'),
                     ])
                     ->columns(1),
             ]);

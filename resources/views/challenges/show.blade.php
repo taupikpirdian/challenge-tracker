@@ -921,16 +921,59 @@
                                             </p>
                                         </div>
                                     </div>
-                                    @php
-                                        $statusClasses = match($submission->status) {
-                                            'approved' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-                                            'rejected' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-                                            default => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-                                        };
-                                    @endphp
-                                    <span class="px-3 py-1 text-xs font-semibold rounded {{ $statusClasses }}">
-                                        {{ ucfirst($submission->status) }}
-                                    </span>
+                                    <div class="flex items-center gap-2">
+                                        @php
+                                            $statusClasses = match($submission->status) {
+                                                'approved' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+                                                'rejected' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+                                                default => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
+                                            };
+
+                                            // Get first image from submission values for sharing
+                                            $firstImage = null;
+                                            if($submission->values && $submission->values->count() > 0) {
+                                                foreach($submission->values as $value) {
+                                                    if($value->rule && ($value->rule->field_type === 'image' || $value->rule->field_type === 'file')) {
+                                                        if($value->value_text) {
+                                                            $filePath = $value->value_text;
+                                                            $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+                                                            if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'])) {
+                                                                $firstImage = asset('storage/' . $value->value_text);
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            // Build share text
+                                            $shareText = "🎯 " . $challenge->title . "\n\n";
+                                            $shareText .= "📅 " . $submission->formatted_date . "\n";
+                                            $shareText .= "📊 Progress: " . $submittedDays . "/" . $totalDays . " days (" . $progressPercentage . "%)\n";
+                                            $shareText .= "🔥 Current Streak: " . $currentStreak . " days\n";
+                                            $shareText .= "🏆 Best Streak: " . $longestStreak . " days\n\n";
+                                            $shareText .= "✨ Status: " . ucfirst($submission->status) . "\n\n";
+                                            $shareText .= "Join the challenge! 💪";
+                                            $shareTextEncoded = urlencode($shareText);
+                                            $shareUrl = url()->current();
+                                        @endphp
+
+                                        <span class="px-3 py-1 text-xs font-semibold rounded {{ $statusClasses }}">
+                                            {{ ucfirst($submission->status) }}
+                                        </span>
+
+                                        @if($firstImage)
+                                            <a href="{{ route('challenges.submissions.show', ['slug' => $challenge->slug, 'submission' => $submission->id]) }}"
+                                               class="flex items-center gap-1 px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-xs font-semibold rounded transition shadow-sm"
+                                               title="Share submission"
+                                               target="_blank">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                                                </svg>
+                                                <span>Share</span>
+                                            </a>
+                                        @endif
+                                    </div>
                                 </div>
 
                                 @if($submission->values && $submission->values->count() > 0)

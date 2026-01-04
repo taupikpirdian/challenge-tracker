@@ -27,6 +27,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/challenges/{challenge}/submissions', [SubmissionController::class, 'store'])->name('submissions.store');
 });
 
+// Public submission detail route (for sharing)
+Route::get('/challenges/{slug}/submissions/{submission}', [ChallengeController::class, 'showSubmissionDetail'])->name('challenges.submissions.show');
+
 // Note: Filament admin panel routes are automatically registered
 // Filament handles all /dashboard/* routes including authentication
 // Access the admin panel at /dashboard

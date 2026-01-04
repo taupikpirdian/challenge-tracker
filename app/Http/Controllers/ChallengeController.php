@@ -229,4 +229,57 @@ class ChallengeController extends Controller
         return redirect()->back()
             ->with('success', 'You have left the challenge.');
     }
+
+    /**
+     * Display submission detail page (public for sharing).
+     */
+    public function showSubmissionDetail(string $slug, int $submission): View
+    {
+        $challenge = Challenge::where('slug', $slug)
+            ->with(['creator'])
+            ->firstOrFail();
+
+        $submission = Submission::where('id', $submission)
+            ->where('challenge_id', $challenge->id)
+            ->with(['user', 'values.rule', 'values.files'])
+            ->firstOrFail();
+
+        // Get first image for OG tag
+        $firstImage = null;
+        if($submission->values && $submission->values->count() > 0) {
+            foreach($submission->values as $value) {
+                if($value->rule && ($value->rule->field_type === 'image' || $value->rule->field_type === 'file')) {
+                    if($value->value_text) {
+                        $filePath = $value->value_text;
+                        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+                        if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'])) {
+                            $firstImage = asset('storage/' . $value->value_text);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Calculate progress stats
+        $totalDays = $challenge->duration_days;
+        $submittedDays = Submission::where('user_id', $submission->user_id)
+            ->where('challenge_id', $challenge->id)
+            ->where('status', 'approved')
+            ->count();
+        $progressPercentage = min(100, round(($submittedDays / $totalDays) * 100));
+
+        // Calculate streak
+        $currentStreak = $this->calculateStreak($submission->user_id, $challenge->id);
+
+        return view('challenges.submission-detail', compact(
+            'challenge',
+            'submission',
+            'firstImage',
+            'totalDays',
+            'submittedDays',
+            'progressPercentage',
+            'currentStreak'
+        ));
+    }
 }

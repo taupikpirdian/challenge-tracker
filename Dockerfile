@@ -26,10 +26,12 @@ COPY composer.json composer.lock ./
 RUN composer install \
     --no-dev \
     --optimize-autoloader \
-    --no-interaction
+    --no-interaction \
+    --no-scripts
 
 # Copy app source
 COPY . .
+RUN php artisan package:discover --ansi
 
 # Permissions
 RUN chown -R www-data:www-data /var/www \

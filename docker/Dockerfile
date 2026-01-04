@@ -31,11 +31,20 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy application source first (prevents composer script errors that need app files)
-COPY . .
+# Copy composer files first
+COPY composer.json composer.lock ./
 
-# Install dependencies (production)
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+# Install dependencies (production) without executing scripts
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-scripts \
+    --ignore-platform-reqs
+
+# Copy application source
+COPY . .
 
 # Clear and optimize Laravel caches to prevent "Class config does not exist" errors
 RUN php artisan config:clear \

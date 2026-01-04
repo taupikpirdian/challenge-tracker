@@ -31,7 +31,9 @@ RUN composer install \
 
 # Copy app source
 COPY . .
-RUN php artisan package:discover --ansi
+
+RUN php artisan optimize:clear \
+ && php artisan package:discover --ansi
 
 # Permissions
 RUN chown -R www-data:www-data /var/www \

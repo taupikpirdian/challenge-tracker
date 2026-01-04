@@ -62,6 +62,10 @@
             }
         }
     </script>
+
+    <!-- Flatpickr Datepicker CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/amber.css">
     @stack('styles')
 
     <!-- JSON-LD Schema -->
@@ -123,6 +127,9 @@
             </p>
         </div>
     </footer>
+
+    <!-- Flatpickr Datepicker JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     @stack('scripts')
 </body>

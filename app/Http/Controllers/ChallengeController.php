@@ -11,13 +11,14 @@ use Illuminate\View\View;
 class ChallengeController extends Controller
 {
     /**
-     * Calculate streak for a user's submissions
+     * Calculate streak for a user's submissions (only approved submissions)
      */
     private function calculateStreak($userId, $challengeId): int
     {
-        // Get all submissions for this user in this challenge, ordered by date
+        // Get all approved submissions for this user in this challenge, ordered by date
         $submissions = Submission::where('user_id', $userId)
             ->where('challenge_id', $challengeId)
+            ->where('status', 'approved')
             ->orderBy('day_number', 'desc') // Get most recent first
             ->pluck('day_number')
             ->map(function($timestamp) {
@@ -93,8 +94,9 @@ class ChallengeController extends Controller
             }
         }
 
-        // Get top 10 participants for leaderboard
+        // Get top 10 participants for leaderboard (only approved submissions)
         $topParticipants = Submission::where('challenge_id', $challenge->id)
+            ->where('status', 'approved')
             ->selectRaw('user_id, COUNT(*) as submissions_count')
             ->groupBy('user_id')
             ->orderByDesc('submissions_count')
@@ -107,7 +109,7 @@ class ChallengeController extends Controller
                     ->first();
                 if ($participant) {
                     $participant->submissions_count = $item->submissions_count;
-                    // Calculate streak for this participant
+                    // Calculate streak for this participant (only approved submissions)
                     $participant->streak = $this->calculateStreak($item->user_id, $challenge->id);
                 }
                 return $participant;
@@ -125,9 +127,10 @@ class ChallengeController extends Controller
             if ($streak > 0) {
                 $activeStreakCount++;
             } else {
-                // Check if they have any submissions
+                // Check if they have any approved submissions
                 $hasSubmissions = Submission::where('user_id', $participant->user_id)
                     ->where('challenge_id', $challenge->id)
+                    ->where('status', 'approved')
                     ->exists();
                 if ($hasSubmissions) {
                     $leftBehindCount++;
@@ -135,16 +138,20 @@ class ChallengeController extends Controller
             }
         }
 
-        // New submissions in last 24 hours
+        // New submissions in last 24 hours (only approved)
         $newSubmissionsCount = Submission::where('challenge_id', $challenge->id)
+            ->where('status', 'approved')
             ->where('created_at', '>=', now()->subHours(24))
             ->count();
 
-        // Total submissions
-        $totalSubmissions = Submission::where('challenge_id', $challenge->id)->count();
+        // Total submissions (only approved)
+        $totalSubmissions = Submission::where('challenge_id', $challenge->id)
+            ->where('status', 'approved')
+            ->count();
 
-        // Get feed data - all submissions with their values and user info
+        // Get feed data - only approved submissions with their values and user info
         $feedSubmissions = Submission::where('challenge_id', $challenge->id)
+            ->where('status', 'approved')
             ->with(['user', 'values.rule'])
             ->orderBy('submitted_at', 'desc')
             ->orderBy('created_at', 'desc')

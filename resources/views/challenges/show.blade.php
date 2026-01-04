@@ -581,12 +581,12 @@
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Tanggal Progress
                             </label>
-                            <input type="date"
+                            <input type="text"
+                                   id="submission-datepicker"
                                    name="submission_date"
                                    required
-                                   min="{{ $challenge->start_date->format('Y-m-d') }}"
-                                   max="{{ $challenge->end_date->format('Y-m-d') }}"
-                                   class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                                   placeholder="Pilih tanggal..."
+                                   class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-700 dark:text-white cursor-pointer">
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                 Periode: {{ $challenge->start_date->format('M d, Y') }} - {{ $challenge->end_date->format('M d, Y') }}
                             </p>
@@ -621,25 +621,58 @@
                                               placeholder="Enter {{ $rule->label }}"></textarea>
 
                                 @elseif($rule->field_type === 'date')
-                                    <input type="date" name="fields[{{ $rule->id }}]"
-                                           {{ $rule->is_required ? 'required' : '' }}
-                                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                                    <div class="relative">
+                                        <input type="text"
+                                               id="date-field-{{ $rule->id }}"
+                                               name="fields[{{ $rule->id }}]"
+                                               {{ $rule->is_required ? 'required' : '' }}
+                                               placeholder="Pilih tanggal..."
+                                               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-700 dark:text-white cursor-pointer">
+                                    </div>
 
                                 @elseif($rule->field_type === 'time')
-                                    <input type="time" name="fields[{{ $rule->id }}]"
+                                    <input type="text"
+                                           id="time-field-{{ $rule->id }}"
+                                           name="fields[{{ $rule->id }}]"
                                            {{ $rule->is_required ? 'required' : '' }}
-                                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                                           placeholder="Pilih waktu..."
+                                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-700 dark:text-white cursor-pointer">
 
                                 @elseif($rule->field_type === 'datetime')
-                                    <input type="datetime-local" name="fields[{{ $rule->id }}]"
+                                    <input type="text"
+                                           id="datetime-field-{{ $rule->id }}"
+                                           name="fields[{{ $rule->id }}]"
                                            {{ $rule->is_required ? 'required' : '' }}
-                                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                                           placeholder="Pilih tanggal & waktu..."
+                                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-700 dark:text-white cursor-pointer">
 
                                 @elseif($rule->field_type === 'file' || $rule->field_type === 'image')
-                                    <input type="file" name="fields[{{ $rule->id }}]"
-                                           {{ $rule->is_required ? 'required' : '' }}
-                                           accept="{{ $rule->field_type === 'image' ? 'image/*' : '*' }}"
-                                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                                    <div class="space-y-3">
+                                        <input type="file" name="fields[{{ $rule->id }}]"
+                                               id="file-field-{{ $rule->id }}"
+                                               {{ $rule->is_required ? 'required' : '' }}
+                                               accept="{{ $rule->field_type === 'image' ? 'image/*' : '*' }}"
+                                               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-700 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 dark:file:bg-amber-900 dark:file:text-amber-300 dark:hover:file:bg-amber-800"
+                                               onchange="previewFile(this, {{ $rule->id }}, '{{ $rule->field_type }}')">
+
+                                        <!-- Preview Container -->
+                                        <div id="preview-{{ $rule->id }}" class="hidden">
+                                            <div class="relative">
+                                                <img id="preview-image-{{ $rule->id }}"
+                                                     src=""
+                                                     alt="Preview"
+                                                     class="max-w-full max-h-64 rounded-lg border border-gray-300 dark:border-gray-600 shadow-md">
+                                                <button type="button"
+                                                        onclick="clearFile({{ $rule->id }}, '{{ $rule->field_type }}')"
+                                                        class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-lg transition">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <p id="preview-filename-{{ $rule->id }}" class="mt-2 text-sm text-gray-600 dark:text-gray-400 truncate"></p>
+                                        </div>
+                                    </div>
 
                                 @elseif($rule->field_type === 'select')
                                     <select name="fields[{{ $rule->id }}]"
@@ -1186,6 +1219,125 @@ document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         closeImageModal();
     }
+});
+
+// File Preview Function
+function previewFile(input, fieldId, fieldType) {
+    const previewContainer = document.getElementById('preview-' + fieldId);
+    const previewImage = document.getElementById('preview-image-' + fieldId);
+    const previewFilename = document.getElementById('preview-filename-' + fieldId);
+
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+
+        // Show filename
+        if (previewFilename) {
+            previewFilename.textContent = 'Selected: ' + file.name;
+        }
+
+        // For image files, show preview
+        if (fieldType === 'image' || file.type.startsWith('image/')) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewContainer.classList.remove('hidden');
+            }
+
+            reader.readAsDataURL(file);
+        } else {
+            // For non-image files, just show filename
+            previewImage.classList.add('hidden');
+            previewContainer.classList.remove('hidden');
+        }
+    } else {
+        clearFile(fieldId, fieldType);
+    }
+}
+
+// Clear File Function
+function clearFile(fieldId, fieldType) {
+    const input = document.getElementById('file-field-' + fieldId);
+    const previewContainer = document.getElementById('preview-' + fieldId);
+    const previewImage = document.getElementById('preview-image-' + fieldId);
+    const previewFilename = document.getElementById('preview-filename-' + fieldId);
+
+    // Clear the input
+    input.value = '';
+
+    // Hide preview
+    previewContainer.classList.add('hidden');
+
+    // Clear image source
+    previewImage.src = '';
+
+    // Clear filename
+    if (previewFilename) {
+        previewFilename.textContent = '';
+    }
+}
+
+// Initialize datepickers when document is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Flatpickr for submission date
+    const submissionDatepicker = document.getElementById('submission-datepicker');
+    if (submissionDatepicker) {
+        flatpickr("#submission-datepicker", {
+            dateFormat: "Y-m-d",
+            minDate: "{{ $challenge->start_date->format('Y-m-d') }}",
+            maxDate: "{{ $challenge->end_date->format('Y-m-d') }}",
+            allowInput: true,
+            disableMobile: true,
+            theme: "amber",
+            locale: {
+                firstDayOfWeek: 1 // Monday as first day
+            }
+        });
+    }
+
+    // Initialize Flatpickr for date inputs
+    const dateInputs = document.querySelectorAll('input[id^="date-field-"]');
+
+    dateInputs.forEach(function(input) {
+        flatpickr("#" + input.id, {
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            disableMobile: true,
+            theme: "amber",
+            locale: {
+                firstDayOfWeek: 1 // Monday as first day
+            }
+        });
+    });
+
+    // Initialize Flatpickr for datetime inputs
+    const datetimeInputs = document.querySelectorAll('input[id^="datetime-field-"]');
+
+    datetimeInputs.forEach(function(input) {
+        flatpickr("#" + input.id, {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            allowInput: true,
+            disableMobile: true,
+            theme: "amber",
+            time_24hr: true
+        });
+    });
+
+    // Initialize Flatpickr for time inputs
+    const timeInputs = document.querySelectorAll('input[id^="time-field-"]');
+
+    timeInputs.forEach(function(input) {
+        flatpickr("#" + input.id, {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            allowInput: true,
+            disableMobile: true,
+            theme: "amber",
+            time_24hr: true
+        });
+    });
 });
 </script>
 @endsection

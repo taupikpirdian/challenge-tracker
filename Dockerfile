@@ -32,8 +32,9 @@ RUN composer install \
 # Copy app source
 COPY . .
 
-RUN php artisan optimize:clear \
- && php artisan package:discover --ansi
+# Skip artisan commands in production build (will run in container if needed)
+# RUN php artisan optimize:clear \
+#  && php artisan package:discover --ansi
 
 # Permissions
 RUN chown -R www-data:www-data /var/www \

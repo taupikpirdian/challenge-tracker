@@ -143,6 +143,20 @@ class ChallengeController extends Controller
         // Total submissions
         $totalSubmissions = Submission::where('challenge_id', $challenge->id)->count();
 
+        // Get feed data - all submissions with their values and user info
+        $feedSubmissions = Submission::where('challenge_id', $challenge->id)
+            ->with(['user', 'values.rule'])
+            ->orderBy('submitted_at', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function($submission) {
+                // Add formatted time ago
+                $submission->time_ago = $submission->submitted_at
+                    ? $submission->submitted_at->diffForHumans()
+                    : $submission->created_at->diffForHumans();
+                return $submission;
+            });
+
         return view('challenges.show', compact(
             'challenge',
             'isParticipant',
@@ -151,7 +165,8 @@ class ChallengeController extends Controller
             'activeStreakCount',
             'leftBehindCount',
             'newSubmissionsCount',
-            'totalSubmissions'
+            'totalSubmissions',
+            'feedSubmissions'
         ));
     }
 

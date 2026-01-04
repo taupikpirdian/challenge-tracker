@@ -317,6 +317,224 @@
         </div>
     @endif
 
+    <!-- Feed/Timeline Section -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-8">
+        <div class="p-6 md:p-8 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+                <svg class="w-7 h-7 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+                Activity Feed
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mt-2">See all submissions from challenge participants</p>
+        </div>
+
+        <!-- Vertical Scroll Container with Fixed Height -->
+        <div class="overflow-y-auto" style="max-height: 800px;">
+            <div class="max-w-2xl mx-auto">
+                @if($feedSubmissions->count() > 0)
+                    <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                        @foreach($feedSubmissions as $submission)
+                            <!-- Feed Post -->
+                            <div class="p-6 md:p-8">
+                                <!-- Post Header -->
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <!-- User Avatar -->
+                                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                                            {{ strtoupper(substr($submission->user->name ?? 'A', 0, 1)) }}
+                                        </div>
+
+                                        <div>
+                                            <!-- Username -->
+                                            <h4 class="font-semibold text-gray-900 dark:text-white">
+                                                {{ $submission->user->name ?? 'Anonymous' }}
+                                                @if($submission->user && $submission->user->id === auth()->id())
+                                                    <span class="text-xs bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300 px-2 py-0.5 rounded-full ml-2">
+                                                        You
+                                                    </span>
+                                                @endif
+                                            </h4>
+
+                                            <!-- Time & Status -->
+                                            <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                                <span>{{ $submission->time_ago }}</span>
+                                                <span>•</span>
+                                                <span>Day {{ \Carbon\Carbon::createFromTimestamp($submission->day_number)->format('d') }}</span>
+                                                <span>•</span>
+                                                @php
+                                                    $statusColors = match($submission->status) {
+                                                        'approved' => 'text-green-600',
+                                                        'rejected' => 'text-red-600',
+                                                        default => 'text-yellow-600',
+                                                    };
+                                                @endphp
+                                                <span class="{{ $statusColors }} font-medium">
+                                                    {{ ucfirst($submission->status) }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- More Options Button -->
+                                    <button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Submission Content -->
+                                @if($submission->values && $submission->values->count() > 0)
+                                    <div class="space-y-4 mb-4">
+                                    @foreach($submission->values as $value)
+                                        @if($value->rule)
+                                            <!-- Image/Video Content -->
+                                            @if($value->rule->field_type === 'image' && $value->value_text)
+                                                <div class="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md">
+                                                    <img src="{{ asset('storage/' . $value->value_text) }}"
+                                                         alt="{{ $value->rule->label }}"
+                                                         class="w-full max-h-96 object-cover"
+                                                         onclick="openImageModal('{{ asset('storage/' . $value->value_text) }}')"
+                                                         onerror="this.parentElement.style.display='none'">
+                                                </div>
+
+                                            <!-- File Content -->
+                                            @elseif($value->rule->field_type === 'file' && $value->value_text)
+                                                @php
+                                                    $filePath = $value->value_text;
+                                                    $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+                                                    $isImage = in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp']);
+                                                @endphp
+                                                @if($isImage)
+                                                    <div class="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md">
+                                                        <img src="{{ asset('storage/' . $value->value_text) }}"
+                                                             alt="{{ $value->rule->label }}"
+                                                             class="w-full max-h-96 object-cover"
+                                                             onclick="openImageModal('{{ asset('storage/' . $value->value_text) }}')"
+                                                             onerror="this.parentElement.style.display='none'">
+                                                    </div>
+                                                @else
+                                                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                                                        <div class="flex items-center gap-2">
+                                                            <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                            </svg>
+                                                            <div>
+                                                                <p class="font-medium text-gray-900 dark:text-white">{{ $value->rule->label }}</p>
+                                                                <a href="{{ asset('storage/' . $value->value_text) }}"
+                                                                   target="_blank"
+                                                                   class="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300 text-sm flex items-center mt-1">
+                                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                                                    </svg>
+                                                                    Download file
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+
+                                            <!-- Text/Number/Other Content -->
+                                            @elseif(in_array($value->rule->field_type, ['text', 'textarea', 'number', 'date', 'time', 'datetime', 'select', 'radio']) && ($value->value_text || $value->value_number !== null))
+                                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium">{{ $value->rule->label }}</p>
+                                                    <p class="text-gray-900 dark:text-white">
+                                                        @if($value->rule->field_type === 'textarea')
+                                                            <span class="whitespace-pre-wrap">{{ $value->value_text }}</span>
+                                                        @elseif($value->rule->field_type === 'number')
+                                                            {{ $value->value_number ?? $value->value_text }}
+                                                        @else
+                                                            {{ $value->value_text }}
+                                                        @endif
+                                                    </p>
+                                                </div>
+
+                                            <!-- Boolean/Toggle/Checkbox -->
+                                            @elseif(in_array($value->rule->field_type, ['checkbox', 'toggle']) && $value->value_boolean !== null)
+                                                <div class="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                                                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ $value->rule->label }}:</span>
+                                                    @if($value->value_boolean)
+                                                        <span class="text-green-600 font-semibold flex items-center gap-1">
+                                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                            </svg>
+                                                            Yes
+                                                        </span>
+                                                    @else
+                                                        <span class="text-red-600 font-semibold flex items-center gap-1">
+                                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                                            </svg>
+                                                            No
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            @endif
+                                        @endif
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            <!-- Engagement Bar -->
+                            <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <div class="flex items-center gap-6">
+                                    <!-- Like Button -->
+                                    <button class="flex items-center gap-2 text-gray-600 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition group">
+                                        <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                        </svg>
+                                        <span class="text-sm font-medium">Like</span>
+                                    </button>
+
+                                    <!-- Comment Button -->
+                                    <button class="flex items-center gap-2 text-gray-600 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition group">
+                                        <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                        </svg>
+                                        <span class="text-sm font-medium">Comment</span>
+                                    </button>
+
+                                    <!-- Share Button -->
+                                    <button class="flex items-center gap-2 text-gray-600 hover:text-green-500 dark:text-gray-400 dark:hover:text-green-400 transition group">
+                                        <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                                        </svg>
+                                        <span class="text-sm font-medium">Share</span>
+                                    </button>
+                                </div>
+
+                                <!-- Save Button -->
+                                <button class="text-gray-600 hover:text-amber-500 dark:text-gray-400 dark:hover:text-amber-400 transition group">
+                                    <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Timestamp -->
+                            <div class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+                                Submitted {{ $submission->submitted_at ? $submission->submitted_at->format('M d, Y \a\t g:i A') : 'recently' }}
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <!-- Empty State -->
+                    <div class="p-12 text-center">
+                        <svg class="w-24 h-24 mx-auto text-gray-300 dark:text-gray-600 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">No Activity Yet</h3>
+                        <p class="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+                            Be the first to share your progress! Once participants start submitting, you'll see their updates here.
+                        </p>
+                    </div>
+                @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Progress Tabs Section -->
     @if($isParticipant && $challenge->status === 'active')
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-8">

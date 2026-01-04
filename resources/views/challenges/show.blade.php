@@ -567,10 +567,10 @@
                         </p>
                     </div>
                 @endif
-                </div>
             </div>
         </div>
     </div>
+
 
     <!-- Progress Tabs Section -->
     @if($isParticipant && $challenge->status === 'active')

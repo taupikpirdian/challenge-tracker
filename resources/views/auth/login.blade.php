@@ -6,6 +6,39 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Login - Challenge Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .alert {
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            animation: slideIn 0.3s ease-out;
+        }
+        .alert-success {
+            background-color: #d1fae5;
+            border: 1px solid #34d399;
+            color: #065f46;
+        }
+        .alert-error {
+            background-color: #fee2e2;
+            border: 1px solid #f87171;
+            color: #991b1b;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .btn-loading {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="max-w-md w-full">
@@ -21,17 +54,11 @@
                 <p class="text-gray-600 mt-2">Challenge Tracker</p>
             </div>
 
-            <!-- Error Messages -->
-            @if ($errors->any())
-                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-                    @foreach ($errors->all() as $error)
-                        <span class="block">{{ $error }}</span>
-                    @endforeach
-                </div>
-            @endif
+            <!-- Alert Container -->
+            <div id="alert-container"></div>
 
             <!-- Login Form -->
-            <form method="POST" action="{{ route('login.post') }}">
+            <form id="login-form">
                 @csrf
 
                 <!-- Email Field -->
@@ -83,6 +110,7 @@
                 <div class="mb-4">
                     <button
                         type="submit"
+                        id="login-btn"
                         class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-150 ease-in-out"
                     >
                         Login
@@ -106,5 +134,73 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#login-form').on('submit', function(e) {
+                e.preventDefault();
+
+                // Remove existing alerts
+                $('#alert-container').empty();
+
+                // Add loading state
+                const $btn = $('#login-btn');
+                const originalText = $btn.text();
+                $btn.addClass('btn-loading').text('Logging in...');
+
+                // Get form data
+                const formData = $(this).serialize();
+
+                // Send AJAX request
+                $.ajax({
+                    url: '{{ route('login.post') }}',
+                    method: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            // Show success message
+                            showAlert('Login successful! Redirecting...', 'success');
+
+                            // Redirect to dashboard
+                            setTimeout(function() {
+                                window.location.href = response.redirect || '/dashboard';
+                            }, 500);
+                        } else {
+                            // Show error message
+                            showAlert(response.message || 'Login failed. Please try again.', 'error');
+                            $btn.removeClass('btn-loading').text(originalText);
+                        }
+                    },
+                    error: function(xhr) {
+                        // Handle error response
+                        let errorMessage = 'Login failed. Please try again.';
+
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            const errors = xhr.responseJSON.errors;
+                            errorMessage = Object.values(errors).flat().join('<br>');
+                        }
+
+                        showAlert(errorMessage, 'error');
+                        $btn.removeClass('btn-loading').text(originalText);
+                    }
+                });
+            });
+
+            function showAlert(message, type) {
+                const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+                const alertHtml = '<div class="alert ' + alertClass + '">' + message + '</div>';
+                $('#alert-container').html(alertHtml);
+
+                // Auto-remove success alerts after 3 seconds
+                if (type === 'success') {
+                    setTimeout(function() {
+                        $('#alert-container').empty();
+                    }, 3000);
+                }
+            }
+        });
+    </script>
 </body>
 </html>

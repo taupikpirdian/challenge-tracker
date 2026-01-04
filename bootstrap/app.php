@@ -14,8 +14,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
             'dashboard.access' => \App\Filament\Middleware\CheckDashboardAccess::class,
+            'log.requests' => \App\Http\Middleware\LogRequests::class,
         ]);
 
+        // Add global logging middleware to web group
+        $middleware->web(append: [
+            \App\Http\Middleware\LogRequests::class,
+        ]);
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {

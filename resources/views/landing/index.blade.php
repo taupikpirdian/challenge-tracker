@@ -17,6 +17,18 @@
     <!-- ========== CANONICAL URL ========== -->
     <link rel="canonical" href="{{ url('/') }}">
 
+    <!-- ========== GOOGLE ANALYTICS ========== -->
+    @if(config('services.google_analytics.tracking_id'))
+        <!-- Google Analytics (GA4) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google_analytics.tracking_id') }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '{{ config('services.google_analytics.tracking_id') }}');
+        </script>
+    @endif
+
     <!-- ========== OPEN GRAPH / FACEBOOK ========== -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url('/') }}">

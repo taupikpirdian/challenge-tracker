@@ -46,9 +46,8 @@ RUN composer install \
 # Copy application source
 COPY . .
 
-# Clear and optimize Laravel caches to prevent "Class config does not exist" errors
+# Clear config cache (file-based only, no database access)
 RUN php artisan config:clear \
-    && php artisan cache:clear \
     && php artisan route:clear \
     && php artisan config:cache \
     && composer dump-autoload

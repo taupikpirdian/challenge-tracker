@@ -104,11 +104,11 @@ The system follows a web-based architecture with separate concerns for:
 ### Landing Page
 <img src="/public/readme/landing-page.png" alt="Landing Page" width="800"/>
 
-### Dashboard
-<img src="/public/readme/dashboard.png" alt="Dashboard" width="800"/>
-
 ### Create Challenge
 <img src="/public/readme/create-challenge.png" alt="Create Challenge" width="800"/>
+
+### Dashboard
+<img src="/public/readme/dashboard.png" alt="Dashboard" width="800"/>
 
 ### Challenge Detail
 <img src="/public/readme/detail-challenge.png" alt="Challenge Detail" width="800"/>

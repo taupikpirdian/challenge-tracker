@@ -56,7 +56,7 @@ RUN php artisan config:clear \
 RUN php artisan vendor:publish --tag=livewire:assets --force
 
 # Ensure writable permissions for storage and cache
-RUN mkdir -p storage bootstrap/cache \
+RUN mkdir -p storage bootstrap/cache storage/logs \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
@@ -68,6 +68,9 @@ CMD ["php-fpm"]
 # Nginx stage with bundled config
 # -----------------------------
 FROM nginx:alpine AS challenge-tracker-nginx
+
+# Create log directories
+RUN mkdir -p /var/log/nginx /var/log/php-fpm
 
 # Copy only public assets into nginx image
 COPY --from=challenge-tracker-app /var/www/html/public /var/www/html/public

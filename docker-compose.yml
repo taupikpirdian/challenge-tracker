@@ -1,0 +1,38 @@
+services:
+  challenge-tracker-app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: challenge-tracker-app
+    image: challenge-tracker:latest
+    container_name: challenge-tracker-app
+    volumes:
+      - challenge_tracker_storage:/var/www/html/storage
+    env_file:
+      - .env
+    networks:
+      - challenge-tracker_net
+    restart: unless-stopped
+
+  challenge-tracker-nginx:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: challenge-tracker-nginx
+    container_name: challenge-tracker-nginx
+    ports:
+      - "8002:80"
+    volumes:
+      - challenge_tracker_storage:/var/www/html/storage
+    depends_on:
+      - challenge-tracker-app
+    networks:
+      - challenge-tracker_net
+    restart: unless-stopped
+
+networks:
+  challenge-tracker_net:
+    driver: bridge
+
+volumes:
+  challenge_tracker_storage:

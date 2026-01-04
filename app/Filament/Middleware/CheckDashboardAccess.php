@@ -16,21 +16,26 @@ class CheckDashboardAccess
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Use web guard explicitly to get authenticated user
+        $user = auth('web')->user();
+        $isAuthenticated = auth('web')->check();
+
         // Log incoming request
         Log::info('Dashboard access attempt', [
             'ip' => $request->ip(),
             'url' => $request->fullUrl(),
-            'user_id' => auth()->id(),
-            'authenticated' => auth()->check(),
+            'user_id' => auth('web')->id(),
+            'authenticated' => $isAuthenticated,
+            'session_id' => session()->getId(),
         ]);
-
-        $user = auth()->user();
 
         // Allow access if user is authenticated
         if (!$user) {
             Log::warning('Dashboard access denied: User not authenticated', [
                 'ip' => $request->ip(),
                 'url' => $request->fullUrl(),
+                'session_has_user_id' => session()->has('user_id'),
+                'session_all' => session()->all(),
             ]);
             abort(403, 'You must be logged in to access the dashboard.');
         }

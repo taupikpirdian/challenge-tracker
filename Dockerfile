@@ -24,7 +24,6 @@ COPY composer.json composer.lock ./
 
 # Install vendor
 RUN composer install \
-    --no-dev \
     --optimize-autoloader \
     --no-interaction \
     --no-scripts

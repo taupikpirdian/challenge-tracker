@@ -21,6 +21,7 @@ use App\Filament\Widgets\DashboardGreetingWidget;
 use App\Filament\Widgets\MyChallengesWidget;
 use App\Filament\Widgets\StatsOverviewWidget;
 use App\Filament\Responses\LogoutResponse;
+use App\Filament\Middleware\CheckDashboardAccess;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -71,6 +72,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                CheckDashboardAccess::class,
             ]);
     }
 }

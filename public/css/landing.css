@@ -603,6 +603,10 @@ footer hr {
 
 /* ========== RESPONSIVE DESIGN ========== */
 @media (max-width: 991px) {
+    .hero-section {
+        padding-top: 80px;
+    }
+
     .hero-content h1 {
         font-size: 2.5rem;
     }
@@ -639,6 +643,10 @@ footer hr {
 }
 
 @media (max-width: 767px) {
+    .hero-section {
+        padding-top: 100px;
+    }
+
     .hero-content h1 {
         font-size: 2rem;
     }
@@ -678,6 +686,10 @@ footer hr {
 }
 
 @media (max-width: 575px) {
+    .hero-section {
+        padding-top: 120px;
+    }
+
     .hero-content h1 {
         font-size: 1.75rem;
     }

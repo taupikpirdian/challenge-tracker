@@ -18,9 +18,9 @@
                     <dd class="text-sm font-medium text-gray-900 dark:text-white">
                         @if($value->rule->field_type === 'image')
                             @if($value->value_text)
-                                <a href="{{ asset('storage/' . $value->value_text) }}" target="_blank"
+                                <a href="{{ \App\Helpers\MinioHelper::getProxyUrl($value->value_text) }}" target="_blank"
                                    class="inline-block">
-                                    <img src="{{ asset('storage/' . $value->value_text) }}"
+                                    <img src="{{ \App\Helpers\MinioHelper::getProxyUrl($value->value_text) }}"
                                          alt="{{ $value->rule->label }}"
                                          class="max-w-xs max-h-48 rounded-lg border border-gray-300 dark:border-gray-600 hover:opacity-90 transition cursor-pointer object-cover">
                                 </a>
@@ -30,7 +30,7 @@
 
                         @elseif($value->rule->field_type === 'file')
                             @if($value->value_text)
-                                <a href="{{ asset('storage/' . $value->value_text) }}"
+                                <a href="{{ \App\Helpers\MinioHelper::getProxyUrl($value->value_text) }}"
                                    target="_blank"
                                    class="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 inline-flex items-center gap-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

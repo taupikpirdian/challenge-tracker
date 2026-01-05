@@ -370,7 +370,14 @@ class SubmissionResource extends Resource
                     ->relationship('challenge', 'title'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->label('View Details')
+                    ->modalHeading(fn ($record) => "Submission Details - {$record->user->name}")
+                    ->modalDescription(fn ($record) => "Challenge: {$record->challenge->title}")
+                    ->modalWidth('7xl')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close')
+                    ->color('primary'),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -504,12 +511,30 @@ class SubmissionResource extends Resource
 
                                     // Create entry based on field type
                                     switch ($rule->field_type) {
-                                        case 'file':
                                         case 'image':
                                             $entry = Infolists\Components\ImageEntry::make('value')
                                                 ->label($rule->label)
-                                                ->default($value)
+                                                ->default(fn () => !empty($value) ? \App\Helpers\MinioHelper::getProxyUrl($value) : null)
                                                 ->visible(fn () => !empty($value));
+                                            break;
+
+                                        case 'file':
+                                            // Check if it's an image file
+                                            $isImage = !empty($value) && in_array(strtolower(pathinfo($value, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp']);
+
+                                            if ($isImage) {
+                                                $entry = Infolists\Components\ImageEntry::make('value')
+                                                    ->label($rule->label)
+                                                    ->default(fn () => \App\Helpers\MinioHelper::getProxyUrl($value))
+                                                    ->visible(fn () => !empty($value));
+                                            } else {
+                                                $entry = Infolists\Components\TextEntry::make('value')
+                                                    ->label($rule->label)
+                                                    ->url(fn () => !empty($value) ? \App\Helpers\MinioHelper::getProxyUrl($value) : null)
+                                                    ->openUrlInNewTab()
+                                                    ->default(fn () => !empty($value) ? basename($value) : '-')
+                                                    ->formatStateUsing(fn ($state) => !empty($value) ? basename($value) : '-');
+                                            }
                                             break;
 
                                         case 'checkbox':

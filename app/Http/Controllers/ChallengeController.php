@@ -253,7 +253,7 @@ class ChallengeController extends Controller
                         $filePath = $value->value_text;
                         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
                         if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'])) {
-                            $firstImage = asset('storage/' . $value->value_text);
+                            $firstImage = \App\Helpers\MinioHelper::getProxyUrl($value->value_text);
                             break;
                         }
                     }

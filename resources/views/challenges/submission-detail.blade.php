@@ -60,6 +60,10 @@
     {{ $firstImage ?? $challenge->cover_image_url }}
 @endsection
 
+@section('og_image_alt')
+    {{ $submission->user->name }}'s progress in {{ $challenge->title }}
+@endsection
+
 @section('og_url')
     {{ url()->current() }}
 @endsection
@@ -74,6 +78,10 @@
 
 @section('twitter_image')
     {{ $firstImage ?? $challenge->cover_image_url }}
+@endsection
+
+@section('twitter_image_alt')
+    {{ $submission->user->name }}'s progress in {{ $challenge->title }}
 @endsection
 
 @section('twitter_url')

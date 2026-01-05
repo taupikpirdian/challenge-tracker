@@ -64,6 +64,10 @@
     {{ $challenge->cover_image_url }}
 @endsection
 
+@section('og_image_alt')
+    {{ $challenge->title }} - Challenge Tracker
+@endsection
+
 @section('og_url')
     {{ url()->current() }}
 @endsection
@@ -78,6 +82,10 @@
 
 @section('twitter_image')
     {{ $challenge->cover_image_url }}
+@endsection
+
+@section('twitter_image_alt')
+    {{ $challenge->title }} - Challenge Tracker
 @endsection
 
 @section('twitter_url')

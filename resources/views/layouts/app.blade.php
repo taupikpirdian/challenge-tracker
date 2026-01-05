@@ -19,7 +19,10 @@
     <meta property="og:url" content="@yield('og_url', url()->current())">
     <meta property="og:title" content="@yield('og_title', 'Challenge Tracker - Track Your Progress')">
     <meta property="og:description" content="@yield('og_description', 'Join challenges and track your daily progress. Achieve your goals today!')">
-    <meta property="og:image" content="@yield('og_image', asset('images/og-default.jpg'))">
+    <meta property="og:image" content="@yield('og_image', asset('images/og-default.svg'))">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="@yield('og_image_alt', 'Challenge Tracker')">
     <meta property="og:site_name" content="Challenge Tracker">
 
     <!-- Twitter -->
@@ -27,7 +30,8 @@
     <meta property="twitter:url" content="@yield('twitter_url', url()->current())">
     <meta property="twitter:title" content="@yield('twitter_title', 'Challenge Tracker - Track Your Progress')">
     <meta property="twitter:description" content="@yield('twitter_description', 'Join challenges and track your daily progress. Achieve your goals today!')">
-    <meta property="twitter:image" content="@yield('twitter_image', asset('images/og-default.jpg'))">
+    <meta property="twitter:image" content="@yield('twitter_image', asset('images/og-default.svg'))">
+    <meta property="twitter:image:alt" content="@yield('twitter_image_alt', 'Challenge Tracker')">
 
     <!-- Additional SEO Meta Tags -->
     <meta name="robots" content="@yield('robots', 'index, follow')">

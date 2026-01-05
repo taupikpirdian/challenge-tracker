@@ -48,7 +48,7 @@ class Challenge extends Model
     public function getCoverImageUrlAttribute(): string
     {
         if (empty($this->cover_image)) {
-            return asset('images/og-default.jpg');
+            return asset('images/og-default.svg');
         }
 
         // If it's already a full URL, return it

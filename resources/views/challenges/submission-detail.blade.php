@@ -192,7 +192,7 @@
 
                             @if($value->rule->field_type === 'image' && $value->value_text)
                                 <div class="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-lg">
-                                    <img src="{{ asset('storage/' . $value->value_text) }}"
+                                    <img src="{{ \App\Helpers\MinioHelper::getProxyUrl($value->value_text) }}"
                                          alt="{{ $value->rule->label }}"
                                          class="w-full max-h-96 object-cover">
                                 </div>
@@ -205,13 +205,13 @@
                                 @endphp
                                 @if($isImage)
                                     <div class="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-lg">
-                                        <img src="{{ asset('storage/' . $value->value_text) }}"
+                                        <img src="{{ \App\Helpers\MinioHelper::getProxyUrl($value->value_text) }}"
                                              alt="{{ $value->rule->label }}"
                                              class="w-full max-h-96 object-cover">
                                     </div>
                                 @else
                                     <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                                        <a href="{{ asset('storage/' . $value->value_text) }}"
+                                        <a href="{{ \App\Helpers\MinioHelper::getProxyUrl($value->value_text) }}"
                                            target="_blank"
                                            class="inline-flex items-center text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300">
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

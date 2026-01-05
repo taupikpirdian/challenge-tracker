@@ -429,10 +429,10 @@
                                             <!-- Image/Video Content -->
                                             @if($value->rule->field_type === 'image' && $value->value_text)
                                                 <div class="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md">
-                                                    <img src="{{ asset('storage/' . $value->value_text) }}"
+                                                    <img src="{{ \App\Helpers\MinioHelper::getProxyUrl($value->value_text) }}"
                                                          alt="{{ $value->rule->label }}"
                                                          class="w-full max-h-96 object-cover"
-                                                         onclick="openImageModal('{{ asset('storage/' . $value->value_text) }}')"
+                                                         onclick="openImageModal('{{ \App\Helpers\MinioHelper::getProxyUrl($value->value_text) }}')"
                                                          onerror="this.parentElement.style.display='none'">
                                                 </div>
 
@@ -445,10 +445,10 @@
                                                 @endphp
                                                 @if($isImage)
                                                     <div class="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md">
-                                                        <img src="{{ asset('storage/' . $value->value_text) }}"
+                                                        <img src="{{ \App\Helpers\MinioHelper::getProxyUrl($value->value_text) }}"
                                                              alt="{{ $value->rule->label }}"
                                                              class="w-full max-h-96 object-cover"
-                                                             onclick="openImageModal('{{ asset('storage/' . $value->value_text) }}')"
+                                                             onclick="openImageModal('{{ \App\Helpers\MinioHelper::getProxyUrl($value->value_text) }}')"
                                                              onerror="this.parentElement.style.display='none'">
                                                     </div>
                                                 @else
@@ -459,7 +459,7 @@
                                                             </svg>
                                                             <div>
                                                                 <p class="font-medium text-gray-900 dark:text-white">{{ $value->rule->label }}</p>
-                                                                <a href="{{ asset('storage/' . $value->value_text) }}"
+                                                                <a href="{{ \App\Helpers\MinioHelper::getProxyUrl($value->value_text) }}"
                                                                    target="_blank"
                                                                    class="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300 text-sm flex items-center mt-1">
                                                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -975,7 +975,7 @@
                                                             $filePath = $value->value_text;
                                                             $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
                                                             if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'])) {
-                                                                $firstImage = asset('storage/' . $value->value_text);
+                                                                $firstImage = \App\Helpers\MinioHelper::getProxyUrl($value->value_text);
                                                                 break;
                                                             }
                                                         }
@@ -1027,10 +1027,10 @@
                                                             @if($value->rule->field_type === 'image')
                                                                 @if($value->value_text)
                                                                     <div class="relative group">
-                                                                        <img src="{{ asset('storage/' . $value->value_text) }}"
+                                                                        <img src="{{ \App\Helpers\MinioHelper::getProxyUrl($value->value_text) }}"
                                                                              alt="{{ $value->rule->label }}"
                                                                              class="max-w-full md:max-w-md max-h-64 w-auto rounded-lg object-cover border border-gray-200 dark:border-gray-600 cursor-pointer transition-transform duration-300 group-hover:scale-105 shadow-lg"
-                                                                             onclick="openImageModal('{{ asset('storage/' . $value->value_text) }}')"
+                                                                             onclick="openImageModal('{{ \App\Helpers\MinioHelper::getProxyUrl($value->value_text) }}')"
                                                                              onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
                                                                         <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-lg flex items-center justify-center pointer-events-none">
                                                                             <svg class="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1052,10 +1052,10 @@
                                                                     @endphp
                                                                     @if($isImage)
                                                                         <div class="relative group">
-                                                                            <img src="{{ asset('storage/' . $value->value_text) }}"
+                                                                            <img src="{{ \App\Helpers\MinioHelper::getProxyUrl($value->value_text) }}"
                                                                                  alt="{{ $value->rule->label }}"
                                                                                  class="max-w-full md:max-w-md max-h-64 w-auto rounded-lg object-cover border border-gray-200 dark:border-gray-600 cursor-pointer transition-transform duration-300 group-hover:scale-105 shadow-lg"
-                                                                                 onclick="openImageModal('{{ asset('storage/' . $value->value_text) }}')"
+                                                                                 onclick="openImageModal('{{ \App\Helpers\MinioHelper::getProxyUrl($value->value_text) }}')"
                                                                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
                                                                             <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-lg flex items-center justify-center pointer-events-none">
                                                                                 <svg class="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1065,7 +1065,7 @@
                                                                         </div>
                                                                         <span class="text-red-500 hidden" style="display:none">Image not found</span>
                                                                     @else
-                                                                        <a href="{{ asset('storage/' . $value->value_text) }}"
+                                                                        <a href="{{ \App\Helpers\MinioHelper::getProxyUrl($value->value_text) }}"
                                                                            target="_blank"
                                                                            class="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300 flex items-center">
                                                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -35,6 +35,7 @@ class ChallengeResource extends Resource
                             ->label('Cover Image')
                             ->disk('s3')
                             ->directory('challenge-covers')
+                            ->visibility('public')
                             ->maxSize(10240) // 10MB
                             ->columnSpanFull()
                             ->helperText('Upload a cover image for the challenge (Max 10MB)')

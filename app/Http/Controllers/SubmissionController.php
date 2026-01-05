@@ -6,6 +6,7 @@ use App\Models\Challenge;
 use App\Models\ChallengeRule;
 use App\Models\Submission;
 use App\Models\SubmissionValue;
+use App\Helpers\MinioHelper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -105,7 +106,8 @@ class SubmissionController extends Controller
                         if ($request->hasFile($fileKey)) {
                             $file = $request->file($fileKey);
                             if ($file && $file->isValid()) {
-                                $path = $file->store('submissions', 'public');
+                                // Upload to Minio
+                                $path = MinioHelper::uploadFile($file, 'submissions');
                                 $submissionValue->value_text = $path;
                             }
                         }

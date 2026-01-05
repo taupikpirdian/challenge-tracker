@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use App\Helpers\MinioHelper;
 
 class Challenge extends Model
 {
@@ -41,6 +42,30 @@ class Challenge extends Model
                 $challenge->slug = Str::slug($challenge->title);
             }
         });
+    }
+
+    // Accessors
+    public function getCoverImageUrlAttribute(): string
+    {
+        if (empty($this->cover_image)) {
+            return asset('images/og-default.jpg');
+        }
+
+        // If it's already a full URL, return it
+        if (str_starts_with($this->cover_image, 'http')) {
+            return $this->cover_image;
+        }
+
+        // Check if it's a legacy local path (starts with 'challenge-covers' or 'submissions')
+        if (str_starts_with($this->cover_image, 'challenge-covers') ||
+            str_starts_with($this->cover_image, 'submissions') ||
+            str_starts_with($this->cover_image, 'uploads')) {
+            // It's a Minio path - use proxy URL
+            return MinioHelper::getProxyUrl($this->cover_image);
+        }
+
+        // Legacy path from local storage
+        return asset('storage/' . $this->cover_image);
     }
 
     // Relationships

@@ -41,7 +41,7 @@
                 <div class="slider-card rounded-lg overflow-hidden shadow-lg bg-white dark:bg-gray-700 cursor-pointer hover:scale-105 transition-transform duration-200"
                      onclick="window.location.href='{{ route('challenges.show', $slug) }}'">
                     @if($challenge->cover_image)
-                        <img class="w-full h-48 object-cover" src="{{ asset('storage/' . $challenge->cover_image) }}" alt="{{ $challenge->title }}">
+                        <img class="w-full h-48 object-cover" src="{{ $challenge->cover_image_url }}" alt="{{ $challenge->title }}">
                     @else
                         <img class="w-full h-48 object-cover" src="https://picsum.photos/seed/{{ $challenge->id }}/400/300" alt="{{ $challenge->title }}">
                     @endif

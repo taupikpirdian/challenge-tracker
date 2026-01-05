@@ -61,7 +61,7 @@
 @endsection
 
 @section('og_image')
-    {{ $challenge->cover_image ? asset('storage/' . $challenge->cover_image) : asset('images/og-default.jpg') }}
+    {{ $challenge->cover_image_url }}
 @endsection
 
 @section('og_url')
@@ -77,7 +77,7 @@
 @endsection
 
 @section('twitter_image')
-    {{ $challenge->cover_image ? asset('storage/' . $challenge->cover_image) : asset('images/og-default.jpg') }}
+    {{ $challenge->cover_image_url }}
 @endsection
 
 @section('twitter_url')
@@ -130,7 +130,7 @@
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-8">
         @if($challenge->cover_image)
             <div class="h-64 md:h-80 overflow-hidden">
-                <img src="{{ asset('storage/' . $challenge->cover_image) }}"
+                <img src="{{ $challenge->cover_image_url }}"
                      alt="{{ $challenge->title }}"
                      class="w-full h-full object-cover">
             </div>

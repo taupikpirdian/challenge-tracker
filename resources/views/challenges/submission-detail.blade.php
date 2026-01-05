@@ -57,7 +57,7 @@
 @endsection
 
 @section('og_image')
-    {{ $firstImage ?? ($challenge->cover_image ? asset('storage/' . $challenge->cover_image) : asset('images/og-default.jpg')) }}
+    {{ $firstImage ?? $challenge->cover_image_url }}
 @endsection
 
 @section('og_url')
@@ -73,7 +73,7 @@
 @endsection
 
 @section('twitter_image')
-    {{ $firstImage ?? ($challenge->cover_image ? asset('storage/' . $challenge->cover_image) : asset('images/og-default.jpg')) }}
+    {{ $firstImage ?? $challenge->cover_image_url }}
 @endsection
 
 @section('twitter_url')

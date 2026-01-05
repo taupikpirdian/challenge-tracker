@@ -33,16 +33,16 @@ class ChallengeResource extends Resource
                             ->columnSpanFull(),
                         Forms\Components\FileUpload::make('cover_image')
                             ->label('Cover Image')
-                            ->image()
+                            ->disk('s3')
                             ->directory('challenge-covers')
-                            ->maxSize(5120) // 5MB
-                            ->acceptedFileTypes(['image/png', 'image/jpeg', 'image/jpg', 'image/webp'])
+                            ->maxSize(10240) // 10MB
                             ->columnSpanFull()
-                            ->helperText('Upload a cover image for the challenge (PNG, JPG, WEBP - Max 5MB)'),
+                            ->helperText('Upload a cover image for the challenge (Max 10MB)')
+                            ->image(),
                         Forms\Components\RichEditor::make('description')
                             ->columnSpanFull()
-                            ->fileAttachmentsDisk('public')
-                            ->fileAttachmentsDirectory('uploads')
+                            ->fileAttachmentsDisk('s3')
+                            ->fileAttachmentsDirectory('richeditor-uploads')
                             ->required(),
                     ])
                     ->columns(1),
@@ -143,7 +143,7 @@ class ChallengeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('cover_image')
+                Tables\Columns\ImageColumn::make('cover_image_url')
                     ->label('Cover')
                     ->circular(false)
                     ->defaultImageUrl(url('/images/placeholder-challenge.png'))
